@@ -1,7 +1,9 @@
 import snap
+import TSSImplementation as tss
 
-
-def set_static_treshold(hash_table, value):
+def set_static_treshold(hash_table, graph, value):
+    for v in graph.Nodes():
+        hash_table[v.GetId()] = value
     for key in hash_table:
         hash_table[key] = value
     return hash_table
@@ -29,11 +31,12 @@ def exec():
     t = snap.TIntH()
 
     # Set the treshold for each node statically
-    set_static_treshold(t, 1)
+    set_static_treshold(t, graph, 1)
 
     # Set the treshold for each node based on its degree
-    set_degree_based_treshold(t, degrees)
+    #set_degree_based_treshold(t, degrees)
 
+    s = tss.tss(snap.ConvertGraph(type(graph), graph), t)
 
 if __name__ == "__main__":
     exec()
