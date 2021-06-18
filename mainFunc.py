@@ -29,12 +29,23 @@ def exec():
     t = snap.TIntH()
 
     # Set the treshold for each node statically
-    set_static_treshold(graph, t, 1)
+    set_static_treshold(graph, t, 6)
 
     # Set the treshold for each node based on its degree
     #set_degree_based_treshold(graph, t, degrees)
 
     s = tss.tss(snap.ConvertGraph(type(graph), graph), t)
 
+    print("Nodi nel seed set: \n")
+    for node_id in s:
+        print(str(node_id) + " ")
+
+def test():
+    graph = snap.LoadEdgeListStr(snap.TUNGraph, "dataset/twitch/test/test.csv", 0, 1)
+    degrees = graph.GetDegSeqV()
+    for i in range(0, degrees.Len()):
+        print("Node %s has degree %s" % (i, degrees[i]))
+
 if __name__ == "__main__":
     exec()
+    # test()
