@@ -8,8 +8,8 @@ def set_static_treshold(graph, hash_table, value):
 
 
 def set_degree_based_treshold(graph, hash_table, degrees):
-    for key in hash_table:
-        hash_table[key] = degrees[key]
+    for v in graph.Nodes():
+        hash_table[v.GetId()] = degrees[v.GetId()]
     return hash_table
 
 
