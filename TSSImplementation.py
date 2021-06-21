@@ -13,7 +13,7 @@ def tss(graph: snap.TUNGraph, t):
 
         for v in graph.Nodes():     # Scorrere i vertici
             if t[v.GetId()] == 0:
-                print("Caso 1: t["+str(v.GetId())+"] = 0")
+                # print("Caso 1: t["+str(v.GetId())+"] = 0")
                 for u in v.GetOutEdges():
                     if t[u] > 0:
                         t[u] = t[u] - 1         # Si riduce il threshold dei vicini
@@ -26,7 +26,7 @@ def tss(graph: snap.TUNGraph, t):
                 edges_to_delete.clear()
                 found_node = True
             elif v.GetOutDeg() < t[v.GetId()]:
-                print("Caso 2: grado di "+str(v.GetId())+" pari a "+str(v.GetOutDeg())+" e minore di t[" + str(v.GetId()) + "] = " + str(t[v.GetId()]))
+                # print("Caso 2: grado di "+str(v.GetId())+" pari a "+str(v.GetOutDeg())+" e minore di t[" + str(v.GetId()) + "] = " + str(t[v.GetId()]))
                 s.add(v.GetId())        # Aggiunto v al seed set
                 for u in v.GetOutEdges():   # Rimozione del nodo dal grafo
                     if t[u] > 0:
@@ -59,7 +59,7 @@ def tss(graph: snap.TUNGraph, t):
 
             graph.DelNode(node_id)
             edges_to_delete.clear()
-            print("Caso 3: eliminato nodo " + str(node_id))
+            # print("Caso 3: eliminato nodo " + str(node_id))
 
     return s
 
