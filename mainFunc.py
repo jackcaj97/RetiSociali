@@ -2,7 +2,7 @@ import snap
 import TSSImplementation as tss
 import random
 import math
-import numpy
+import copy
 
 
 def set_static_threshold(graph, hash_table, value):
@@ -31,7 +31,9 @@ def deferred_decision(graph, probability_hash_table):
         number_generated = random.random()
         tupla = edge.GetId()
         key = str(tupla[0]) + "-" + str(tupla[1])
+        #print("generated: " + str(number_generated) + " - compared to " + str(probability_hash_table[key]))
         if number_generated < probability_hash_table[key]:  # If random number generated is less than edge activation probability
+            #print("deleted edge (" + str(tupla[0]) + ", " + str(tupla[1]) + ")")
             graph.DelEdge(tupla[0], tupla[1])
 
     return graph
@@ -51,7 +53,7 @@ def exe_static_threshold():
     '''
 
     # Set the threshold for each node statically
-    for i in range(6, 11):
+    for i in range(1, 11):
         # Creates an hash-table used to store the threshold for each node.
         # noinspection PyUnresolvedReferences
         t = snap.TIntH()
@@ -74,10 +76,11 @@ def exe_proportional_threshold():
     # noinspection PyUnresolvedReferences
     graph = snap.LoadEdgeListStr(snap.TUNGraph, "dataset/twitch/ENGB/musae_ENGB_edges.csv", 0, 1)
 
-    for i in numpy.linspace(0.1, 0.5, 9):
+    for i in range(10, 1, -1):      # From 10 to 2
+
         # Set the threshold for each node based on its degree
         t = snap.TIntH()
-        proportion = i
+        proportion = 1/i
         set_degree_based_threshold(graph, t, proportion)
 
         s = tss.tss(snap.ConvertGraph(type(graph), graph), t)
@@ -90,18 +93,23 @@ def exe_probability_static_threshold():
     # noinspection PyUnresolvedReferences
     graph = snap.LoadEdgeListStr(snap.TUNGraph, "dataset/twitch/ENGB/musae_ENGB_edges.csv", 0, 1)
 
-    for i in range(6, 10):
+    for i in range(1, 11):
         # Probability based deferred decision
-        t = snap.TIntH()
-        probability = snap.TStrIntH()
+        t = dict()              # Dictionary with an integer as key and an integer as value
+        probability = dict()    # Dictionary with a string as key and a float as value
 
         set_edge_probability(graph, probability)
 
         threshold = i
         set_static_threshold(graph, t, threshold)
+
         mean = 0
         for j in range(1, 11):
-            s = tss.tss(deferred_decision(snap.ConvertGraph(type(graph), graph), probability), t)
+            t_temp = copy.deepcopy(t)
+            new_graph = deferred_decision(snap.ConvertGraph(type(graph), graph), probability)
+
+            s = tss.tss(new_graph, t)
+
             seed_set_size = len(s)
             mean = mean + seed_set_size
         mean = mean / 10
@@ -113,19 +121,23 @@ def exe_probability_proportional_threshold():
     # noinspection PyUnresolvedReferences
     graph = snap.LoadEdgeListStr(snap.TUNGraph, "dataset/twitch/ENGB/musae_ENGB_edges.csv", 0, 1)
 
-    for i in numpy.linspace(0.1, 0.5, 9):
+    for i in range(10, 1, -1):      # From 10 to 2
         # Set the threshold for each node based on its degree
-        t = snap.TIntH()
-        probability = snap.TStrIntH()
+        t = dict()              # Dictionary with an integer as key and an integer as value
+        probability = dict()    # Dictionary with a string as key and a float as value
 
         set_edge_probability(graph, probability)
 
-        proportion = i
+        proportion = 1/i
         set_degree_based_threshold(graph, t, proportion)
 
         mean = 0
         for j in range(1, 11):
-            s = tss.tss(deferred_decision(snap.ConvertGraph(type(graph), graph), probability), t)
+            t_temp = copy.deepcopy(t)
+            new_graph = deferred_decision(snap.ConvertGraph(type(graph), graph), probability)
+
+            s = tss.tss(new_graph, t_temp)
+
             seed_set_size = len(s)
             mean = mean + seed_set_size
         mean = mean / 10
@@ -140,8 +152,8 @@ def test():
 
 
 if __name__ == "__main__":
-    exe_static_threshold()
+    #exe_static_threshold()
     exe_proportional_threshold()
-    exe_probability_static_threshold()
-    exe_probability_proportional_threshold()
+    #exe_probability_static_threshold()
+    #exe_probability_proportional_threshold()
     # test()
